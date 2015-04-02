@@ -3,4 +3,6 @@
   vars_files:
     - vars/cloudconductor.yml
   roles:
+    - cloudconductor/dependencies
     - cloudconductor/install
+    - cloudconductor_cli
