@@ -36,7 +36,7 @@
   command: bundle exec rake db:migrate RAILS_ENV=production chdir=~/cloudconductor
 
 - name: Regist CloudConductor User
-  command: /root/rake_wapper.sh chdir=~/cloudconductor
+  command: ~/cloudconductor-ansible/rake_wapper.sh chdir=~/cloudconductor
 
 - name: Start CloudConductor
   command: bundle exec unicorn -c config/unicorn.rb -E production -D chdir=~/cloudconductor
