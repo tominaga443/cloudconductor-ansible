@@ -1,0 +1,47 @@
+- name: Install Dependencies
+  yum: name={{item}} state=latest
+  with_items:
+    - git
+    - wget
+    - unzip
+    - gcc
+    - gcc-c++
+    - make
+    - patch
+    - openssl-devel
+    - libxslt-devel
+    - libxml2-devel
+    - sqlite-devel
+
+- name: Make Packer directory
+  file: path=/opt/packer state=directory
+
+- name: Get Packer
+  get_url: url=https://dl.bintray.com/mitchellh/packer/packer_0.7.5_linux_amd64.zip dest=/tmp
+
+- name: Unpack Packer
+  unarchive: src=/tmp/packer_0.7.5_linux_amd64.zip dest=/opt/packer
+
+- name: Get Ruby 2.1.5
+  get_url: url=http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.5.tar.gz dest=/usr/local/src/
+
+- name: Unpack Ruby
+  unarchive: src=/usr/local/src/ruby-2.1.5.tar.gz dest=/usr/local/src/ creates=/usr/local/src/ruby-2.1.5
+
+- name: Make Ruby
+  shell: >
+    ./configure --with-opt-dir=/usr/local --enable-shared --enable-option-checking &&
+    make &&
+    make test &&
+    make install
+    chdir=/usr/local/src/ruby-2.1.5
+    creates=/usr/local/bin/ruby
+
+- name: Set Path
+  replace: >
+    dest=/etc/sudoers
+    regexp="^Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin$"
+    replace="Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin"
+
+- name: Install Bundler
+  command: gem install bundler

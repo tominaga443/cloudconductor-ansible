@@ -1,0 +1,4 @@
+cloudconductor_host: your-cloudconductor-server.example.com
+dns_access_key: your_access_key
+dns_secret_key: your_secret_key
+

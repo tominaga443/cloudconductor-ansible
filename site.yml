@@ -1,0 +1,6 @@
+- hosts: cloudconductor
+  sudo: yes
+  vars_files:
+    - vars/cloudconductor.yml
+  roles:
+    - cloudconductor/install

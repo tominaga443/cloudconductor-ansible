@@ -1,0 +1,14 @@
+- name: Download CloudConductor CLI
+  git: repo=https://github.com/cloudconductor/cloud_conductor_cli.git dest=~/cloudconductor_cli
+
+- name: Bundele Install
+  command: bundle install chdir=~/cloudconductor_cli
+
+- name: Bundle exec rake install
+  command: bundle exec rake install chdir=~/cloudconductor_cli
+
+- name: Setting CloudConductor Information
+  lineinfile: dest=~/.bashrc line="CC_HOST=localhost"
+- lineinfile: dest=~/.bashrc line="CC_PORT=8080"
+- lineinfile: dest=~/.bashrc line="CC_AUTH_ID=cloudconductor@example.com"
+- lineinfile: dest=~/.bashrc line="CC_AUTH_PASSWORD=cloudconductor"

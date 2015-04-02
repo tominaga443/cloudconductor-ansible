@@ -1,0 +1,42 @@
+- name: Download CloudConductor
+  git: repo=https://github.com/cloudconductor/cloud_conductor.git dest=~/cloudconductor
+
+- name: Bundele Install
+  command: bundle install chdir=~/cloudconductor
+
+- name: Copy Config
+  copy: src=~/cloudconductor/config/config.rb.smp dest=~/cloudconductor/config/config.rb 
+
+- name: Configure cloudconductor/config.rb
+  lineinfile: >-
+    dest=~/cloudconductor/config/config.rb
+    state=present
+    backrefs=yes
+    regexp="{{ item.regexp }}"
+    line="{{ item.line }}"
+  with_items:
+  - regexp: "^cloudconductor.url"
+    line: "cloudconductor.url 'http://{{ cloudconductor_host }}/api/v1'"
+  - regexp: "^dns.access_key"
+    line: "dns.access_key '{{ dns_access_key }}'"
+  - regexp: "^dns.secret_key"
+    line: "dns.secret_key '{{ dns_secret_key }}'"
+
+- name: Set secret_key_base
+  command: bundle exec rake secret chdir=~/cloudconductor
+  register: secret_key_base
+
+- name: Configure secret.yml
+  command: sed -i -e "s/secret_key_base':' .*/secret_key_base':' {{ secret_key_base.stdout }}/g" config/secrets.yml chdir=~/cloudconductor
+
+- name: Configure initializers/devise.rb
+  command: sed -i -e "s/# config.secret_key = '.*'/config.secret_key = '{{ secret_key_base.stdout }}'/" config/initializers/devise.rb chdir=~/cloudconductor
+
+- name: Migrate DB
+  command: bundle exec rake db:migrate RAILS_ENV=production chdir=~/cloudconductor
+
+- name: Regist CloudConductor User
+  command: /root/rake_wapper.sh chdir=~/cloudconductor
+
+- name: Start CloudConductor
+  command: bundle exec unicorn -c config/unicorn.rb -E production -D chdir=~/cloudconductor
