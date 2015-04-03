@@ -1,6 +1,6 @@
 #!/usr/bin/expect
 
-spawn bundle exec rake register:admin RAILS_ENV=production chdir=~/cloudconductor
+spawn bundle exec rake register:admin RAILS_ENV=production
 
 expect "Email"
 send "cloudconductor@example.com\n"
@@ -13,3 +13,5 @@ send "cloudconductor\n"
 
 expect "Password Confirmation"
 send "cloudconductor\n"
+
+expect "Administrator account registered"
