@@ -27,16 +27,22 @@
   register: secret_key_base
 
 - name: Configure secret.yml
-  command: sed -i -e "s/secret_key_base':' .*/secret_key_base':' {{ secret_key_base.stdout }}/g" config/secrets.yml chdir=~/cloudconductor
+  lineinfile: >-
+    dest=~/cloudconductor/config/secrets.yml
+    regexp="secret_key_base:"
+    line="  secret_key_base: {{ secret_key_base.stdout }}"
 
 - name: Configure initializers/devise.rb
-  command: sed -i -e "s/# config.secret_key = '.*'/config.secret_key = '{{ secret_key_base.stdout }}'/" config/initializers/devise.rb chdir=~/cloudconductor
+  lineinfile: >-
+    dest=~/cloudconductor/config/initializers/devise.rb
+    regexp="# config.secret_key = '.*'"
+    line="  config.secret_key = '{{ secret_key_base.stdout }}'"
 
 - name: Migrate DB
   command: bundle exec rake db:migrate RAILS_ENV=production chdir=~/cloudconductor
 
 - name: Regist CloudConductor User
-  command: ~/cloudconductor-ansible/rake_wapper.sh chdir=~/cloudconductor
+  command: ~/cloudconductor-ansible/rake_wrapper.sh chdir=~/cloudconductor
 
 - name: Start CloudConductor
   command: bundle exec unicorn -c config/unicorn.rb -E production -D chdir=~/cloudconductor

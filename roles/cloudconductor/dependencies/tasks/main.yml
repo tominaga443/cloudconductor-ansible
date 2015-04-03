@@ -9,6 +9,8 @@
     - make
     - patch
     - openssl-devel
+    - expect
+    - libselinux-python
     - libxslt-devel
     - libxml2-devel
     - sqlite-devel

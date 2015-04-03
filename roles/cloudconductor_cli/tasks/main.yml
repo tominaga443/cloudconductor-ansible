@@ -8,7 +8,7 @@
   command: bundle exec rake install chdir=~/cloudconductor_cli
 
 - name: Setting CloudConductor Information
-  lineinfile: dest=~/.bashrc line="CC_HOST=localhost"
-- lineinfile: dest=~/.bashrc line="CC_PORT=8080"
-- lineinfile: dest=~/.bashrc line="CC_AUTH_ID=cloudconductor@example.com"
-- lineinfile: dest=~/.bashrc line="CC_AUTH_PASSWORD=cloudconductor"
+  lineinfile: dest=~/.bashrc line="export CC_HOST=localhost"
+- lineinfile: dest=~/.bashrc line="export CC_PORT=8080"
+- lineinfile: dest=~/.bashrc line="export CC_AUTH_ID=cloudconductor@example.com"
+- lineinfile: dest=~/.bashrc line="export CC_AUTH_PASSWORD=cloudconductor"
