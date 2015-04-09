@@ -1,15 +1,15 @@
 - name: Download CloudConductor
-  git: repo=https://github.com/cloudconductor/cloud_conductor.git dest=~/cloudconductor
+  git: repo=https://github.com/cloudconductor/cloud_conductor.git dest={{ home_dir }}/cloudconductor
 
 - name: Bundele Install
-  command: bundle install chdir=~/cloudconductor
+  command: bundle install chdir={{ home_dir }}/cloudconductor
 
 - name: Copy Config
-  copy: src=~/cloudconductor/config/config.rb.smp dest=~/cloudconductor/config/config.rb 
+  copy: src={{ home_dir }}/cloudconductor/config/config.rb.smp dest={{ home_dir }}/cloudconductor/config/config.rb 
 
 - name: Configure cloudconductor/config.rb
   lineinfile: >-
-    dest=~/cloudconductor/config/config.rb
+    dest={{ home_dir }}/cloudconductor/config/config.rb
     state=present
     backrefs=yes
     regexp="{{ item.regexp }}"
@@ -23,26 +23,26 @@
     line: "dns.secret_key '{{ dns_secret_key }}'"
 
 - name: Set secret_key_base
-  command: bundle exec rake secret chdir=~/cloudconductor
+  command: bundle exec rake secret chdir={{ home_dir }}/cloudconductor
   register: secret_key_base
 
 - name: Configure secret.yml
   lineinfile: >-
-    dest=~/cloudconductor/config/secrets.yml
+    dest={{ home_dir }}/cloudconductor/config/secrets.yml
     regexp="secret_key_base:"
     line="  secret_key_base: {{ secret_key_base.stdout }}"
 
 - name: Configure initializers/devise.rb
   lineinfile: >-
-    dest=~/cloudconductor/config/initializers/devise.rb
+    dest={{ home_dir }}/cloudconductor/config/initializers/devise.rb
     regexp="# config.secret_key = '.*'"
     line="  config.secret_key = '{{ secret_key_base.stdout }}'"
 
 - name: Migrate DB
-  command: bundle exec rake db:migrate RAILS_ENV=production chdir=~/cloudconductor
+  command: bundle exec rake db:migrate RAILS_ENV=production chdir={{ home_dir }}/cloudconductor
 
 - name: Regist CloudConductor User
-  command: ~/cloudconductor-ansible/rake_wrapper.sh chdir=~/cloudconductor
+  command: /home/centos/cloudconductor-ansible/rake_wrapper.sh chdir={{ home_dir }}/cloudconductor
 
 - name: Start CloudConductor
-  command: bundle exec unicorn -c config/unicorn.rb -E production -D chdir=~/cloudconductor
+  command: bundle exec unicorn -c config/unicorn.rb -E production -D chdir={{ home_dir }}/cloudconductor
